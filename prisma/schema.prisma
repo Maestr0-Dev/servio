@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Waitlist {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  verified          Boolean  @default(false)
+  verificationToken String?  @map("verification_token")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@map("waitlist")
+}

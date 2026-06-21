@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { Users, CheckCircle, Clock, Bot } from "lucide-react";
+import type { Waitlist } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const entries = await prisma.waitlist.findMany({
+  const entries: Waitlist[] = await prisma.waitlist.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   const total = entries.length;
-  const verified = entries.filter((e) => e.verified).length;
+  const verified = entries.filter((e: Waitlist) => e.verified).length;
   const pending = total - verified;
 
   return (

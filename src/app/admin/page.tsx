@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   const entries = await prisma.waitlist.findMany({
     orderBy: { createdAt: "desc" },
-  }) as { id: string; email: string; verified: boolean; createdAt: Date }[];
+  });
 
   const total = await prisma.waitlist.count();
   const verified = await prisma.waitlist.count({ where: { verified: true } });

@@ -8,7 +8,7 @@ async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${baseUrl}/api/waitlist/verify?token=${token}`;
 
   const { error } = await resend.emails.send({
-    from: "Servio <onboarding@resend.dev>",
+    from: "Servio <hello@servio-assist.uk>",
     to: email,
     subject: "Verify your email - Servio Waitlist",
     html: `

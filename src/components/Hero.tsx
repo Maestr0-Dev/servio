@@ -1,6 +1,5 @@
 "use client";
 
-import { Bot } from "lucide-react";
 import WaitlistForm from "./WaitlistForm";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -9,8 +8,7 @@ export default function Hero() {
 
   return (
     <section className="w-full max-w-4xl mx-auto text-center py-28 px-4">
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-        <Bot className="w-4 h-4" />
+      <div className="inline-flex items-center px-4 py-1.5 mb-8 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
         {t.hero.badge}
       </div>
       <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">

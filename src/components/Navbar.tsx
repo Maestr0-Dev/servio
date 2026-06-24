@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { locales, Locale } from "@/lib/i18n";
 
@@ -16,9 +16,6 @@ export default function Navbar() {
     <nav className="w-full border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
-          </div>
           <span className="text-xl font-bold text-gray-900">{t.nav.brand}</span>
         </div>
         <div className="flex items-center gap-4">

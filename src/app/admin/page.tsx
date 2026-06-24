@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Users, CheckCircle, Clock, Bot } from "lucide-react";
+import { Users, CheckCircle, Clock } from "lucide-react";
 
 interface WaitlistEntry {
   id: string;
@@ -30,9 +30,6 @@ function AdminContent({ t }: { t: ReturnType<typeof useLanguage>["t"] }) {
     <main className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
-            <Bot className="w-6 h-6 text-white" />
-          </div>
           <h1 className="text-3xl font-bold text-gray-900">{t.admin.title}</h1>
         </div>
         <p className="text-gray-500 mb-8 ml-13">{t.admin.subtitle}</p>

@@ -12,7 +12,7 @@ async function sendVerificationEmail(email: string, token: string) {
   const { error } = await resend.emails.send({
     from: "Servio <hello@servio-assist.uk>",
     to: email,
-    reply_to: "servio.assist@gmail.com",
+    replyTo: "servio.assist@gmail.com",
     subject: "Verify your email - Servio Waitlist",
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

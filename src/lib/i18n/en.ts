@@ -62,7 +62,7 @@ const en = {
     ],
   },
   benefits: {
-    title: "Why Business Owners Choose Servio",
+    title: "Why You Should Use Servio",
     subtitle:
       "It\u2019s not just about answering calls. It\u2019s about running a better business.",
     items: [
@@ -81,7 +81,7 @@ const en = {
       {
         title: "Save on Staff Costs",
         description:
-          "A full-time receptionist costs $30,000+/year. Servio handles calls, bookings, and confirmations for a fraction of the price \u2014 no salary, no sick days, no training.",
+          "Hiring a receptionist is expensive. Servio handles calls, bookings, and confirmations for a fraction of the price \u2014 no salary, no sick days, no training.",
         stat: "Up to 90% savings",
       },
       {

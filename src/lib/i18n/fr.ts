@@ -62,7 +62,7 @@ const fr = {
     ],
   },
   benefits: {
-    title: "Pourquoi les chefs d\u2019entreprise choisissent Servio",
+    title: "Pourquoi utiliser Servio",
     subtitle:
       "Ce n\u2019est pas seulement r\u00e9pondre aux appels. C\u2019est g\u00e9rer meilleure entreprise.",
     items: [
@@ -81,7 +81,7 @@ const fr = {
       {
         title: "\u00c9conomisez sur le personnel",
         description:
-          "Un r\u00e9ceptionniste \u00e0 temps plein co\u00fbte 30 000$+/an. Servio g\u00e8re les appels, les r\u00e9servations et les confirmations pour une fraction du prix \u2014 pas de salaire, pas d\u2019arr\u00eats maladie, pas de formation.",
+          "Embaucher un r\u00e9ceptionniste est co\u00fbteux. Servio g\u00e8re les appels, les r\u00e9servations et les confirmations pour une fraction du prix \u2014 pas de salaire, pas d\u2019arr\u00eats maladie, pas de formation.",
         stat: "Jusqu\u2019\u00e0 90% d\u2019\u00e9conomies",
       },
       {

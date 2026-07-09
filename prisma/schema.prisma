@@ -6,12 +6,68 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  name              String?
+  passwordHash      String?   @map("password_hash")
+  emailVerified     DateTime? @map("email_verified")
+  verificationToken String?   @map("verification_token")
+  image             String?
+  businesses        Business[]
+  createdAt         DateTime  @default(now()) @map("created_at")
+  @@map("users")
+}
+
+model Business {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  aiPhoneNumber    String?   @unique @map("ai_phone_number")
+  vapiPhoneNumberId String?  @map("vapi_phone_number_id")
+  whatsappNumber   String?   @unique @map("whatsapp_number")
+  whatsappSid      String?   @map("whatsapp_sid")
+  description      String?   @db.Text
+  liveUpdate       String?   @db.Text @map("live_update")
+  telegramBotToken String?   @map("telegram_bot_token")
+  telegramChatId   String?   @map("telegram_chat_id")
+  credits          Decimal   @default(0) @db.Decimal(10,2)
+  services         Service[]
+  bookings         Booking[]
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  @@map("businesses")
+}
+
+model Service {
+  id              String   @id @default(uuid())
+  businessId      String   @map("business_id")
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name            String
+  price           Decimal  @db.Decimal(10,2)
+  durationMinutes Int      @map("duration_minutes")
+  @@map("services")
+}
+
+model Booking {
+  id              String   @id @default(uuid())
+  businessId      String   @map("business_id")
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customerName    String   @map("customer_name")
+  customerPhone   String   @map("customer_phone")
+  serviceName     String   @map("service_name")
+  appointmentTime DateTime @map("appointment_time")
+  status          String   @default("pending")
+  createdAt       DateTime @default(now()) @map("created_at")
+  @@map("bookings")
+}
+
 model Waitlist {
   id                String   @id @default(uuid())
   email             String   @unique
   verified          Boolean  @default(false)
   verificationToken String?  @map("verification_token")
   createdAt         DateTime @default(now()) @map("created_at")
-
   @@map("waitlist")
 }

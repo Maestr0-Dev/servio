@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 export async function getChatResponse(
   businessId: string,
@@ -47,39 +47,38 @@ export async function getChatResponse(
     .filter(Boolean)
     .join("\n");
 
-  // Build conversation history for Gemini
-  const contents = [
+  // Build messages for Groq API
+  const messages = [
+    { role: "system" as const, content: systemPrompt },
     ...messageHistory.map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
+      role: m.role as "user" | "assistant",
+      content: m.content,
     })),
-    { role: "user", parts: [{ text: userMessage }] },
+    { role: "user" as const, content: userMessage },
   ];
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      "https://api.groq.com/openai/v1/chat/completions",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: systemPrompt }],
-          },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 500,
-            temperature: 0.7,
-          },
+          model: "llama-3.3-70b-versatile",
+          messages,
+          max_tokens: 500,
+          temperature: 0.7,
         }),
       }
     );
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    return text || "I'm sorry, I didn't understand that. Could you rephrase?";
+    return data.choices?.[0]?.message?.content || "I'm sorry, I didn't understand that. Could you rephrase?";
   } catch (error) {
-    console.error("Gemini response error:", error);
+    console.error("Groq response error:", error);
     return "I'm having trouble responding right now. Please try again in a moment.";
   }
 }

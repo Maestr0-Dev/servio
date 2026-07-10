@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
   const { t } = useLanguage();
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,22 +19,28 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      if (result.error.includes("not verified")) {
-        setError("Please verify your email before signing in. Check your inbox.");
+      if (result?.error) {
+        if (result.error.includes("not verified")) {
+          setError("Please verify your email before signing in. Check your inbox.");
+        } else {
+          setError(t.auth.login.error);
+        }
+        setLoading(false);
+      } else if (result?.ok) {
+        // Session cookie is now set, safe to redirect
+        window.location.href = "/businesses";
       } else {
-        setError(t.auth.login.error);
+        setLoading(false);
       }
+    } catch {
       setLoading(false);
-    } else {
-      router.push("/businesses");
-      router.refresh();
     }
   };
 

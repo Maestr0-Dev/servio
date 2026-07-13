@@ -6,8 +6,10 @@ import { resend } from "@/lib/resend";
 
 function getBaseUrl(request: NextRequest) {
   const origin = request.headers.get("origin") || request.headers.get("host");
-  const protocol = request.headers.get("x-forwarded-proto") || "https";
-  return origin ? `${protocol}://${origin}` : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  if (origin) {
+    return origin.startsWith("http") ? origin : `https://${origin}`;
+  }
+  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 }
 
 async function sendVerificationEmail(name: string, email: string, token: string, baseUrl: string) {

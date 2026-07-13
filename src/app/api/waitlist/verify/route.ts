@@ -3,8 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 function getBaseUrl(request: NextRequest) {
   const origin = request.headers.get("origin") || request.headers.get("host");
-  const protocol = request.headers.get("x-forwarded-proto") || "https";
-  return origin ? `${protocol}://${origin}` : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  if (origin) {
+    return origin.startsWith("http") ? origin : `https://${origin}`;
+  }
+  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 }
 
 export async function GET(request: NextRequest) {

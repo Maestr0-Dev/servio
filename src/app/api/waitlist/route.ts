@@ -3,10 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 import { randomBytes } from "crypto";
 
-async function sendVerificationEmail(email: string, token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const verifyUrl = `${baseUrl}/api/waitlist/verify?token=${token}`;
+function getBaseUrl(request: NextRequest) {
+  const origin = request.headers.get("origin") || request.headers.get("host");
+  const protocol = request.headers.get("x-forwarded-proto") || "https";
+  return origin ? `${protocol}://${origin}` : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+}
 
+async function sendVerificationEmail(email: string, token: string, baseUrl: string) {
+  const verifyUrl = `${baseUrl}/api/waitlist/verify?token=${token}`;
   const logoUrl = `${baseUrl}/s.png`;
 
   const { error } = await resend.emails.send({
@@ -47,6 +51,7 @@ async function sendVerificationEmail(email: string, token: string) {
 export async function POST(request: NextRequest) {
   try {
     const { email, action } = await request.json();
+    const baseUrl = getBaseUrl(request);
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -73,7 +78,7 @@ export async function POST(request: NextRequest) {
           where: { id: existing.id },
           data: { verificationToken },
         });
-        await sendVerificationEmail(email, verificationToken);
+        await sendVerificationEmail(email, verificationToken, baseUrl);
         return NextResponse.json({ message: "Verification email resent" }, { status: 200 });
       }
 
@@ -93,7 +98,7 @@ export async function POST(request: NextRequest) {
       data: { email, verificationToken },
     });
 
-    await sendVerificationEmail(email, verificationToken);
+    await sendVerificationEmail(email, verificationToken, baseUrl);
 
     return NextResponse.json({ message: "Verification email sent" }, { status: 201 });
   } catch (error) {

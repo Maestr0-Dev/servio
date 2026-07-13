@@ -4,11 +4,17 @@ import { randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 
-async function sendVerificationEmail(name: string, email: string, token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;
+function getBaseUrl(request: NextRequest) {
+  const origin = request.headers.get("origin") || request.headers.get("host");
+  const protocol = request.headers.get("x-forwarded-proto") || "https";
+  return origin ? `${protocol}://${origin}` : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+}
 
-  console.log("Sending verification email to:", email);
+async function sendVerificationEmail(name: string, email: string, token: string, baseUrl: string) {
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}`;
+  const logoUrl = `${baseUrl}/s.png`;
+
+  console.log("Sending verification email to:", email, "URL:", verifyUrl);
   const { data, error } = await resend.emails.send({
     from: "Servio <hello@servio-assist.uk>",
     to: email,
@@ -17,7 +23,7 @@ async function sendVerificationEmail(name: string, email: string, token: string)
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <img src="${baseUrl}/s.png" alt="Servio" width="48" height="48" style="border-radius: 12px;" />
+          <img src="${logoUrl}" alt="Servio" width="48" height="48" style="border-radius: 12px;" />
         </div>
         <h1 style="color: #171717; text-align: center;">Welcome to Servio!</h1>
         <p style="color: #525252; font-size: 16px; line-height: 1.5;">
@@ -45,6 +51,7 @@ async function sendVerificationEmail(name: string, email: string, token: string)
 export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json();
+    const baseUrl = getBaseUrl(request);
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -61,25 +68,22 @@ export async function POST(request: NextRequest) {
 
     const existing = await prisma.user.findUnique({ where: { email } });
 
-    // If email exists and is NOT verified, resend verification
     if (existing && !existing.emailVerified) {
       const newToken = randomBytes(32).toString("hex");
       await prisma.user.update({
         where: { id: existing.id },
         data: { verificationToken: newToken },
       });
-      await sendVerificationEmail(existing.name || "User", email, newToken);
+      await sendVerificationEmail(existing.name || "User", email, newToken, baseUrl);
       return NextResponse.json({
         message: "Verification email resent. Please check your inbox.",
       }, { status: 200 });
     }
 
-    // If email exists and IS verified, block
     if (existing && existing.emailVerified) {
       return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
-    // New user — create account
     const passwordHash = await bcrypt.hash(password, 12);
     const verificationToken = randomBytes(32).toString("hex");
 
@@ -87,7 +91,7 @@ export async function POST(request: NextRequest) {
       data: { name, email, passwordHash, verificationToken },
     });
 
-    await sendVerificationEmail(name, email, verificationToken);
+    await sendVerificationEmail(name, email, verificationToken, baseUrl);
 
     return NextResponse.json({
       message: "Account created",
